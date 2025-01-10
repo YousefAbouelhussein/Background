@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spazio con Vetro Opaco</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #0e0f2e;
+        }
+
+        .frosted-glass {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(50px);
+            z-index: 1;
+        }
+
+        .twinkling-stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .twinkling-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .moving-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .moving-light {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5; /* Valore iniziale */
+            filter: blur(75px);
+            animation-fill-mode: both; /* Mantiene lo stato corretto */
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        @keyframes moveRandom1 {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(30vw, 10vh); }
+            50% { transform: translate(-20vw, -30vh); }
+            75% { transform: translate(50vw, -20vh); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @keyframes moveRandom2 {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-25vw, 15vh); }
+            50% { transform: translate(40vw, -40vh); }
+            75% { transform: translate(-30vw, 20vh); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @media (max-width: 768px) {
+            .moving-light {
+                filter: blur(50px);
+                width: 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="frosted-glass"></div>
+<div class="twinkling-stars"></div>
+<div class="moving-lights"></div>
+
+<script>
+    function createMovingLights() {
+        const lightsContainer = document.querySelector('.moving-lights');
+
+        function getRandomPosition(region) {
+            if (region === 'left') {
+                return {
+                    x: Math.random() * 40 + 'vw',
+                    y: Math.random() * 100 + 'vh'
+                };
+            } else if (region === 'right') {
+                return {
+                    x: Math.random() * 40 + 60 + 'vw',
+                    y: Math.random() * 100 + 'vh'
+                };
+            } else {
+                return {
+                    x: Math.random() * 20 + 40 + 'vw',
+                    y: Math.random() * 100 + 'vh'
+                };
+            }
+        }
+
+        function getRandomDuration() {
+            return Math.random() * 20 + 20 + 's';
+        }
+
+        const animations = ['moveRandom1', 'moveRandom2'];
+        const initialColors = [
+            'rgb(138, 43, 226)', 'rgba(198,63,0,0.8)',
+            'rgb(0, 0, 255)', 'rgb(255,0,105)',
+            'rgba(0,255,154,0.8)', 'rgba(0, 255, 207, 0.8)',
+            'rgb(94, 0, 255)', 'rgba(0,251,72,0.8)'
+        ];
+
+        for (let i = 0; i < 15; i++) {
+            let light = document.createElement('div');
+            light.classList.add('moving-light');
+
+            let size = Math.random() * 250 + 150;
+            light.style.width = `${size}px`;
+            light.style.height = `${size}px`;
+
+            let region = i % 3 === 0 ? 'left' : i % 3 === 1 ? 'right' : 'center';
+            let startPos = getRandomPosition(region);
+            light.style.left = startPos.x;
+            light.style.top = startPos.y;
+
+            let duration = getRandomDuration();
+            let animation = animations[i % animations.length];
+            let pulseDelay = Math.random() * 3 + 's';
+
+            light.style.animation = `
+                pulse 3s infinite alternate ${pulseDelay},
+                ${animation} ${duration} linear infinite`;
+
+            light.style.backgroundColor = initialColors[i % initialColors.length];
+
+            lightsContainer.appendChild(light);
+        }
+    }
+
+    function createTwinklingStars() {
+        const starsContainer = document.querySelector('.twinkling-stars');
+
+        for (let i = 0; i < 200; i++) {
+            let star = document.createElement('div');
+            star.classList.add('twinkling-star');
+
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+
+            let duration = Math.random() * 5 + 2 + 's';
+            let delay = Math.random() * 5 + 's';
+            star.style.animationDuration = duration;
+            star.style.animationDelay = delay;
+
+            starsContainer.appendChild(star);
+        }
+    }
+
+    window.onload = function () {
+        createMovingLights();
+        createTwinklingStars();
+    };
+</script>
+
+</body>
+</html>
